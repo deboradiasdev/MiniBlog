@@ -63,8 +63,16 @@ export const useAuthentication = () => {
         }
     }
 
-    // login
+    // Logout - sign out
+    const logout = () => {
+        checkIfCancelled();
+
+        signOut(auth);
+    }
+
+    // Login - sign in
     const login = async (data) => {
+
         checkIfCancelled();
 
         setLoading(true);
@@ -72,24 +80,31 @@ export const useAuthentication = () => {
 
         try {
             await signInWithEmailAndPassword(auth, data.email, data.password);
+            setLoading(false);
         } catch (error) {
             let systemErrorMessage;
-            if (error.message.includes('invalid-credential')) {
-                systemErrorMessage = 'Credenciais inválidas.';
-            } else {
-                systemErrorMessage = 'Ocorreu erro, por favor tente mais tarde.';
+            switch (error.code) {
+                case 'auth/user-not-found':
+                    systemErrorMessage = 'Usuário não encontrado.';
+                    break;
+                case 'auth/wrong-password':
+                    systemErrorMessage = 'Senha incorreta.';
+                    break;
+                case 'auth/invalid-email':
+                    systemErrorMessage = 'E-mail inválido.';
+                    break;
+                case 'auth/too-many-requests':
+                    systemErrorMessage = 'Muitas tentativas. Tente mais tarde.';
+                    break;
+                case 'auth/invalid-credential':
+                    systemErrorMessage = 'E-mail ou senha inválidos.';
+                    break;
+                default:
+                    systemErrorMessage = 'Ocorreu erro, por favor tente mais tarde.';
             }
             setError(systemErrorMessage);
-        } finally {
             setLoading(false);
         }
-    }
-
-    // Logout 
-    const logout = () => {
-        checkIfCancelled();
-
-        signOut(auth);
     }
 
     useEffect(() => {
@@ -99,9 +114,9 @@ export const useAuthentication = () => {
     return{
         auth,
         createUser,
-        login,
-        logout,
         error,
-        loading
+        loading,
+        logout,
+        login
     };
 };

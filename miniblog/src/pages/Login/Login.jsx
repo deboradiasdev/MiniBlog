@@ -30,7 +30,7 @@ const Login = () => {
     }, [authError]);
 
     return (
-        <div className={styles.login}>
+        <div className={styles.login} >
             <h1>Entrar</h1>
             <p>Faça o login para poder utilizar o Mini Blog</p>
             <form onSubmit={handleSubmit}>
