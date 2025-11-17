@@ -1,0 +1,22 @@
+.postDetail {
+    margin-bottom: 2em;
+}
+.postDetail img {
+    max-width: 600px;
+}
+.postDetail h2 {
+    margin-bottom: .4em;
+}
+.postDetail .tags {
+    margin-bottom: 1.2em;
+    display: flex;
+}
+.tags span {
+    font-weight: bold;
+}
+.createdby {
+    font-style: italic;
+    color: #444;
+    margin-bottom: 1em;
+    font-size: .8em;
+}
