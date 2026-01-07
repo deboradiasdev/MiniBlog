@@ -16,6 +16,8 @@ import Login from './pages/Login/Login.jsx';
 import Register from './pages/Register/Register.jsx';
 import Dashboard from './pages/Dashboard/Dashboard.jsx';
 import CreatePost from './pages/CreatePost/CreatePost.jsx';
+import Search from './pages/Search/Search.jsx';
+import Post from './pages/Post/Post.jsx';
 
 function App() {
 
@@ -43,6 +45,8 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/posts/:id" element={<Post />} />
               <Route
                 path="/login" 
                 element={ !user ? <Login /> : <Navigate to="/" /> }

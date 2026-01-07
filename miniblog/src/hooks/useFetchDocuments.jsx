@@ -20,6 +20,7 @@ export const useFetchDocuments = (docCollection, search = null, uid = null) => {
     const [cancelled, setCancelled] = useState(false);
 
     useEffect(() => {
+        let unsubscribe;
 
         async function loadData() {
             if (cancelled) return;
@@ -31,18 +32,52 @@ export const useFetchDocuments = (docCollection, search = null, uid = null) => {
             try {
                 let q;
 
-                q = await query(collectionRef, orderBy("createdAt", "desc"));
+                if(search) {
+                    q = query(
+                        collectionRef,
+                        where("tagsArray", "array-contains", search),
+                        orderBy("createdAt", "desc")
+                    );
+                } else {
+                    q = query(collectionRef,
+                        orderBy("createdAt", "desc"));
+                }
 
-                await onSnapshot(q, (querySnapshot) => {
+                const onSuccess = (querySnapshot) => {
                     setDocuments(
-                        querySnapshot.docs.map(doc => ({
+                        querySnapshot.docs.map((doc) => ({
                             id: doc.id,
                             ...doc.data(),
                         }))
                     );
-                });
+                    setError(null);
+                    setLoading(false);
+                };
 
-                setLoading(false);
+                const onError = (snapshotError) => {
+                    if (search && snapshotError.code === "failed-precondition") {
+                        const fallbackQuery = query(
+                            collectionRef,
+                            where("tagsArray", "array-contains", search)
+                        );
+                        unsubscribe = onSnapshot(
+                            fallbackQuery,
+                            onSuccess,
+                            (e2) => {
+                                console.error("Snapshot error:", e2);
+                                setError(e2.message);
+                                setLoading(false);
+                            }
+                        );
+                    } else {
+                        console.error("Snapshot error:", snapshotError);
+                        setError(snapshotError.message);
+                        setLoading(false);
+                    }
+                };
+
+                unsubscribe = onSnapshot(q, onSuccess, onError);
+
             } catch (error) {
                 console.log(error);
                 setError(error.message);
@@ -51,6 +86,12 @@ export const useFetchDocuments = (docCollection, search = null, uid = null) => {
             }
         }    
         loadData();
+        return () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+            setCancelled(true);
+        };
     }, [docCollection, search, uid]);
 
     useEffect(() => {

@@ -9,7 +9,7 @@ const CreatePost = () => {
     const [title, setTitle] = useState("");
     const [image, setImage] = useState("");
     const [body, setBody] = useState("");
-    const [tags, setTags] = useState([]);
+    const [tags, setTags] = useState("");
     const [formError, setFormError] = useState("");
 
     const { user } = useAuthValue();
@@ -22,16 +22,16 @@ const CreatePost = () => {
         e.preventDefault();
         setFormError("");
 
-        try {
-            new URL(image);
-        } catch (error) {
-            setFormError("A URL da imagem não é válida.");
+        if (!/^https?:\/\//.test(image)) {
+            setFormError("A URL da imagem deve começar com http/https.");
+            return;
         }
         
         const tagsArray = tags.split(",").map((tag) => tag.trim().toLowerCase());
 
         if (!title || !image || !body || !tags) {
             setFormError("Por favor, preencha todos os campos.");
+            return;
         }
 
         if (formError) return;

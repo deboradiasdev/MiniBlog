@@ -1,0 +1,22 @@
+.post {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.post img {
+  max-width: 100%;
+  margin-bottom: 1em;
+}
+.createdby {
+  font-style: italic;
+  color: #444;
+  margin-bottom: 1em;
+  font-size: .9em;
+}
+.tags {
+  display: flex;
+  gap: .5em;
+  margin-bottom: 1em;
+}
+.body {
+  line-height: 1.6;
+}
